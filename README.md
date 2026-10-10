@@ -1,10 +1,10 @@
-# Biblioteca
+# GameStore
 
-Sistema para a biblioteca controlar os empréstimos de livros: quem pegou, quando pegou e quando precisa devolver.
+Sistema para loja de revenda de mídias físicas de jogos controlar o estoque, os clientes e as compras: o que tem à venda, quanto cada cliente tem de saldo e o que foi comprado.
 
-Projeto Final da disciplina de Backend (Engenharia de Software, SATC). **Etapa 1: arquitetura do backend.**
+Projeto Final da disciplina de Backend (Engenharia de Software, SATC). 
 
-> **Este é o exemplo pronto da Etapa 1.** Mostra como fica um projeto entregue a partir do template: o problema e as regras criados pelo grupo, a estrutura de todas as entidades, a API funcionando com as regras implementadas e o README preenchido. Biblioteca não é um dos temas do sorteio.
+**Etapa 1: Arquitetura do backend.**
 
 ## Índice
 
@@ -20,32 +20,34 @@ Projeto Final da disciplina de Backend (Engenharia de Software, SATC). **Etapa 1
 
 ## Integrantes
 
-| Nome | GitHub |
-|---|---|
-| Pedro Dal Ponte | @integrante1 |
-| José Dos Santos | @integrante2 |
-| Thales Vaz | @integrante3 |
+| Nome            | GitHub            |
+| --------------- | ----------------- |
+| Pedro Dal Ponte | @PedroDPavei      |
+| José Dos Santos | @JooJ-E           |
+| Thales Vaz      | @thales-vaz-sousa |
 
 ## O problema
 
 **Tema:** Revenda de midia fisicas de jogos
 
-descrição : elaborar
+*Descrição* : *Uma loja de revenda de jogos físicos (CDs, cartuchos, discos de videogames etc...) hoje controla seu estoque, seus clientes e suas vendas em planilhas,  anotações soltas e usa plataformas de marketplace para expor os produtos de forma descentralizada. Isso causa três problemas pertinentes: o dono não sabe ao certo quantas unidades de cada jogo ainda tem, pode induzir ao erro de vender um produto que já acabou, e não há um controle descentralizado da exposição do produto, assim como desconto e preço.*
+
+*O sistema resolve isso centralizando o cadastro de mídias, clientes e carrinhos de compra. O dono cadastra as mídias com preço e quantidade em estoque e administra o saldo dos clientes. O cliente monta seu carrinho, consulta as mídias disponíveis e finaliza a compra, e o sistema desconta o saldo e baixa o estoque automaticamente, impedindo vendas inválidas.*
 
 **Quem usa o sistema:**
 
-| Quem | O que faz no sistema |
-|---|---|
-| Dono E-Comerce | Cadastra midias fisicas, clientes e saldo |
-| Cliente | Consulta os carrinho, midias e finalizar compra |
+| Quem           | O que faz no sistema                           |
+| -------------- | ---------------------------------------------- |
+| Dono E-Comerce | Cadastra midias fisicas, clientes e saldo      |
+| Cliente        | Consulta os carrinho, midias e finaliza compra |
 
-**Regras de negócio.** O grupo criou estas três regras olhando para o problema do caderno: hoje ninguém controla quantos livros cada leitor tem, nem se um exemplar já saiu, nem os prazos.
+**Regras de negócio.** O grupo criou estas três regras olhando para o problema citado: hoje ninguém controla o estoque real, o cadastro dos produtos é inconsistente e .
 
-| # | Regra | Onde está no código | Rota que usa |
-|---|---|---|---|
-| R1 | Um cliente pode comprar somente produtos que tenham estoque > 0 | `compra.????` | `POST /pagar` |
-| R2 | O dono não pode criar cadastro de midias com campos em branco | `??` | `POST /emprestimos` |
-| R3 | O cliente compra midias somente com saldo >= preco | `??`| ?? |
+| #    | Regra                                                          | Onde está no código           | Rota que usa    |
+| ---- | -------------------------------------------------------------- | ----------------------------- | --------------- |
+| `R1` | O cliente pode comprar somente produtos que tenham estoque > 0 | `CompraService`               | `POST /pagar`   |
+| `R2` | O dono não pode criar cadastro de midias com campos em branco  | `ProdutoDto e ProdutoService` | `POST /produto` |
+| `R3` | O cliente compra somente com saldo >= preço total              | `CompraService`               | `POST /compra`  |
 
 
 
@@ -53,52 +55,54 @@ descrição : elaborar
 
 ## Tecnologias
 
-| O quê | Qual |
-|---|---|
-| Linguagem | Java 25 |
-| Framework | Spring Boot 3.5 (Web, Validation, Data JPA) |
-| Banco de dados | sqLite - Docker |
-| Migrations | Flyway |
-| Documentação da API | springdoc-openapi (Swagger UI) |
+| O quê               | Qual                                        |
+| ------------------- | ------------------------------------------- |
+| Linguagem           | Java 25                                     |
+| Framework           | Spring Boot 3.5 (Web, Validation, Data JPA) |
+| Banco de dados      | PostgreSQL - Docker                         |
+| Migrations          | Flyway                                      |
+| Documentação da API | springdoc-openapi (Scalar UI)               |
 
 ## Arquitetura
-
 A API é organizada em camadas. Uma requisição entra pelo Controller, passa pelo Service, que aplica as regras de negócio, e chega ao banco pelo Repository; a resposta faz o caminho de volta. O Mapper converte DTO em entidade e entidade em DTO.
 
 **Mapa da estrutura:**
 
-| Entidade | Migration | Model | Repository | DTOs | Mapper | Service | Controller |
-|---|---|---|---|---|---|---|---|
-| Cliente | `V1__criar_livros.sql`, pronta | `Livro`, pronta | `LivroRepository`, pronto | `LivroRequestDTO`, `LivroResponseDTO`, prontos | `LivroMapper`, implementado | `LivroService`, implementado | `LivroController`, implementado |
-| Produto | `V2__criar_leitores.sql`, pronta | `Leitor`, pronta | `LeitorRepository`, pronto | `LeitorRequestDTO`, `LeitorResponseDTO`, prontos | `LeitorMapper`, implementado | `LeitorService`, em parte: só o cadastro | `LeitorController`, em parte: só o `POST` |
-| Carrinho | `V3__criar_emprestimos.sql`, pronta | `Emprestimo`, pronta | `EmprestimoRepository`, pronto | `EmprestimoRequestDTO`, `EmprestimoResponseDTO`, prontos | `EmprestimoMapper`, implementado | `EmprestimoService`, implementado (R1, R2 e R3) | `EmprestimoController`, implementado |
+| Entidade | Migration                         | Model              | Repository                   | DTOs                                                     | Mapper              | Service                                       | Controller                                 |
+| -------- | --------------------------------- | ------------------ | ---------------------------- | -------------------------------------------------------- | ------------------- | --------------------------------------------- | ------------------------------------------ |
+| Cliente  | `V1__criar_clientes.sql`, pronta  | `Cliente`, pronta  | `ClienteRepository`, pronto  | `ClienteDTO`, `LivroResponseDTO`, prontos                | `???`, implementado | `ClienteService`, implementado                | `ClienteController`, implementado          |
+| Produto  | `V2__criar_produtos.sql`, pronta  | `Produto`, pronta  | `ProdutoRepository`, pronto  | `ProdutoDTO`, `LeitorResponseDTO`, prontos               | `???`, implementado | `ProdutoService`, em parte: só o cadastro     | `ProdutoController`, em parte: só o `POST` |
+| Carrinho | `V3__criar_carrinhos.sql`, pronta | `Carrinho`, pronta | `CarrinhoRepository`, pronto | `CarrinhoTransacaoDTO`, `EmprestimoResponseDTO`, prontos | `???`, implementado | `CarrinhoService`, implementado (R1, R2 e R3) | `CarrinhoController`, implementado         |
 
 elaborar etc..
 
 ## Entidades
 
-| Entidade | O que representa | Como se relaciona |
-|---|---|---|
-| Cliente | Um exemplar do acervo, que pode ser emprestado | Aparece em vários empréstimos |
-| Comprar | Uma pessoa cadastrada na biblioteca | Faz vários empréstimos |
-| Produto | A retirada de um livro por um leitor, com a data de devolução | Pertence a um leitor e a um livro |
+| Entidade | O que representa                                    | Como se relaciona                           |
+| -------- | --------------------------------------------------- | ------------------------------------------- |
+| Cliente  | Pessoa cadastrada na loja, com saldo                | Tem um carrinho e faz várias compras        |
+| Produto  | Mídia física de jogo, com preço e estoque           | Aparece em vários itens de carrinho         |
+| Carrinho | Conjunto de produtos que o cliente pretende comprar | Pertence a um cliente e tem vários produtos |
 
-Atributos, tipos e o diagrama das tabelas estão em [docs/modelo-de-dominio.md](docs/modelo-de-dominio.md).
+Atributos, tipos e o diagrama das tabelas estão específicados em: [docs/modelo-de-dominio.md](docs/modelo-de-dominio.md).
 
 ## Rotas
 
 ### As que já funcionam
 
-| Verbo | Caminho | O que faz | Regra | Sucesso | Erros |
-|---|---|---|---|---|---|
-| `POST` | `/livros` | Cadastra um livro | Nenhuma | `201` | `400` |
-| `GET` | `/livros` | Lista os livros | Nenhuma | `200` | Nenhum |
-| `GET` | `/livros/{id}` | Busca um livro pelo id | Nenhuma | `200` | `404` |
-| `POST` | `/leitores` | Cadastra um leitor | Nenhuma | `201` | `400` |
-| `POST` | `/emprestimos` | Registra um empréstimo e tira o livro da estante | R1, R2 e R3 | `201` | `400`, `404` |
-| `PUT` | `/emprestimos/{id}/devolver` | Registra a devolução e devolve o livro à estante | R3 | `200` | `400`, `404` |
+| Verbo    | Caminho                  | O que faz                                                              | Regra        | Sucesso | Erros        |
+| -------- | ------------------------ | ---------------------------------------------------------------------- | ------------ | ------- | ------------ |
+| `POST`   | `/produto`               | Cadastra um produto                                                    | `R2`         | `201`   | `400`, `404` |
+| `GET`    | `/produtos`              | Lista os produtos                                                      | Nenhuma      | `200`   | Nenhum       |
+| `GET`    | `/produto/{id}`          | Busca um produto pelo id                                               | Nenhuma      | `200`   | `404`        |
+| `DELETE` | `/produto/{id}`          | Deleta um produto pelo id                                              | Nenhuma      | `200`   | `404`        |
+| `POST`   | `/cliente`               | Cadastra um cliente                                                    | `R2`         | `201`   | `400`        |
+| `POST`   | `/compra`                | Registra um transação de compra e registra baixa de produto no estoque | `R1`  e `R3` | `201`   | `400`, `404` |
+| `GET`    | `/carrinho/{idCarrinho}` | Lista de compra                                                        | Nenhuma      | `200`   | `400`, `404` |
+| `PUT`    | `/saldo-cliente`         | Cadastra saldo cliente                                                 | Nenhuma      | `200`   | `400`, `404` |
+|          |                          |                                                                        |              |         |              |
 
-![alt text](image.png)
+
 
 Exemplo de requisição:
 
