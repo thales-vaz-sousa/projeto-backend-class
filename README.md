@@ -41,7 +41,7 @@ Projeto Final da disciplina de Backend (Engenharia de Software, SATC).
 | Dono E-Comerce | Cadastra midias fisicas, clientes e saldo      |
 | Cliente        | Consulta os carrinho, midias e finaliza compra |
 
-**Regras de negócio.** O grupo criou estas três regras olhando para o problema citado: hoje ninguém controla o estoque real, o cadastro dos produtos é inconsistente e .
+**Regras de negócio.** O grupo criou estas regras olhando para o problema citado.
 
 | #    | Regra                                                          | Onde está no código           | Rota que usa    |
 | ---- | -------------------------------------------------------------- | ----------------------------- | --------------- |
@@ -64,7 +64,7 @@ Projeto Final da disciplina de Backend (Engenharia de Software, SATC).
 | Documentação da API | springdoc-openapi (Scalar UI)               |
 
 ## Arquitetura
-A API é organizada em camadas. Uma requisição entra pelo Controller, passa pelo Service, que aplica as regras de negócio, e chega ao banco pelo Repository; a resposta faz o caminho de volta. O Mapper converte DTO em entidade e entidade em DTO.
+A API é organizada em camadas. Uma requisição entra pelo *Controller*, passa pelo *Service*, que aplica as regras de negócio, e chega ao banco pelo *Repository*; a resposta faz o caminho de volta entregando o status ou a informação de retorno estruturada. O Mapper converte DTO em entidade e entidade em DTO.
 
 **Mapa da estrutura:**
 
@@ -97,63 +97,53 @@ Atributos, tipos e o diagrama das tabelas estão específicados em: [docs/modelo
 | `GET`    | `/produto/{id}`          | Busca um produto pelo id                                               | Nenhuma      | `200`   | `404`        |
 | `DELETE` | `/produto/{id}`          | Deleta um produto pelo id                                              | Nenhuma      | `200`   | `404`        |
 | `POST`   | `/cliente`               | Cadastra um cliente                                                    | `R2`         | `201`   | `400`        |
-| `POST`   | `/compra`                | Registra um transação de compra e registra baixa de produto no estoque | `R1`  e `R3` | `201`   | `400`, `404` |
+| `POST`   | `/compra`                | Registra um transação de compra e registra baixa de produto no estoque | `R1`  e `R3` | `200`   | `400`, `404` |
 | `GET`    | `/carrinho/{idCarrinho}` | Lista de compra                                                        | Nenhuma      | `200`   | `400`, `404` |
 | `PUT`    | `/saldo-cliente`         | Cadastra saldo cliente                                                 | Nenhuma      | `200`   | `400`, `404` |
-|          |                          |                                                                        |              |         |              |
-
-
 
 Exemplo de requisição:
 
 ```http
-POST /emprestimos
+POST /compra
 Content-Type: application/json
 
 {
-  "leitorId": 1,
-  "livroId": 1
+  "carrinhoId": 1
 }
 ```
 
-Resposta, `201 Created`. Entram os ids; leitor e livro voltam completos, e a data limite já vem calculada pela regra R3:
+Resposta, `200 Sucessfull`:
 
 ```json
 {
   "id": 1,
-  "leitor": { "id": 1, "nome": "Ana Souza", "email": "ana@exemplo.com" },
-  "livro": { "id": 1, "titulo": "Dom Casmurro", "isbn": "978-85-359-0277-5", "disponivel": false },
-  "dataRetirada": "2026-10-06",
-  "dataLimite": "2026-10-20",
-  "dataDevolucao": null,
-  "atrasado": false
+  "clienteNome": "João",
+  "produtoNome": "Fita Super Nintendo - Donkey Kong",
+  "dataCompra": "2026-10-06"
 }
 ```
 
 ### Erros
 
-Todo erro sai no mesmo formato. Este é o `400` da regra R2, quando alguém tenta pegar um livro que já está emprestado:
+Todo erro sai no mesmo formato. Este é o `400` da regra R1 ou R3, quando alguém tenta comprar  um livro que não tem estoque ou não tem saldo suficiente para a transação:
 
 ```json
 {
   "status": 400,
   "erro": "Bad Request",
-  "mensagem": "R2: o livro 1 já está emprestado",
-  "caminho": "/emprestimos",
+  "mensagem": "R3: o Cliente {NomeCliente} não possui saldo suficiente para efetuar a compra",
+  "caminho": "/compra",
   "timestamp": "2026-10-06T19:30:00",
-  "campos": []
 }
 ```
-
-Um campo inválido também devolve `400`, com a lista `campos` dizendo qual campo corrigir. Um livro, leitor ou empréstimo que não existe devolve `404`.
 
 ### As planejadas
 
 Estão no contrato, mas ainda não respondem.
 
-| Recurso | O que vai fazer |
-|---|---|
-| `GET /leitores` e `GET /leitores/{id}` | Listar e buscar leitores |
+| Recurso                               | O que vai fazer          |
+| ------------------------------------- | ------------------------ |
+| `GET /clientes` e `GET /cliente/{id}` | Listar e buscar clientes |
 
 O contrato completo, com todas as rotas e os DTOs, está em [docs/contrato-da-api.md](docs/contrato-da-api.md).
 
