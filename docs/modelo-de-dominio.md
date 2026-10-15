@@ -77,6 +77,6 @@ Todas existem em `src/main/resources/db/migration`, uma tabela por arquivo.
 
 | Versão | Arquivo | O que cria |
 |---|---|---|
-| V1 | `V1__criar_livros.sql` | Tabela `livros` |
-| V2 | `V2__criar_leitores.sql` | Tabela `leitores` |
-| V3 | `V3__criar_emprestimos.sql` | Tabela `emprestimos`, com as duas chaves estrangeiras |
+| V1 | `V1__criar_clientes.sql` | Tabela `livros` |
+| V2 | `V2__criar_produtos.sql` | Tabela `leitores` |
+| V3 | `V3__criar_carrinhos.sql` | Tabela `emprestimos`, com as duas chaves estrangeiras |

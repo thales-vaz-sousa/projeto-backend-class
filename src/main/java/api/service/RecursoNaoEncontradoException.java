@@ -6,9 +6,9 @@ package api.service;
 //
 // Cada entidade do grupo ganha a sua exceção, herdando desta (Aula 03-04):
 //
-//   public class LivroNaoEncontradoException extends RecursoNaoEncontradoException {
-//       public LivroNaoEncontradoException(Long id) {
-//           super("Livro não encontrado: " + id);
+//   public class ProdutoNaoEncontradoException extends RecursoNaoEncontradoException {
+//       public ProdutoNaoEncontradoException(Long id) {
+//           super("Produto não encontrado: " + id);
 //       }
 //   }
 //

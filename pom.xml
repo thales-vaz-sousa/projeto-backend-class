@@ -20,7 +20,7 @@
     <!-- Identifica o grupo que criou o projeto. -->
     <groupId>org.example</groupId>
     <!-- Nome do artefato gerado pelo Maven. -->
-    <artifactId>biblioteca</artifactId>
+    <artifactId>gamestore</artifactId>
     <!-- Define a versão atual do projeto. -->
     <version>1.0-SNAPSHOT</version>
 

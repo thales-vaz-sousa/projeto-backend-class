@@ -5,10 +5,10 @@ package api.service;
 // dela para saber que a resposta certa é 400.
 //
 // O Service lança esta exceção quando o pedido é válido no formato, mas o
-// sistema não pode aceitá-lo. Exemplo de uma biblioteca:
+// sistema não pode aceitá-lo. Exemplo da loja de jogos:
 //
-//   if (emprestimosEmAberto >= 3) {
-//       throw new RegraDeNegocioException("R1: o leitor já tem 3 empréstimos em aberto");
+//   if (!cliente.temSaldoPara(total)) {
+//       throw new RegraDeNegocioException("R3: o cliente não possui saldo suficiente");
 //   }
 //
 // A mensagem vai para o campo "mensagem" do ErroDTO: escreva para o usuário

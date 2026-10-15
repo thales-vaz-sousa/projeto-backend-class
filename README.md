@@ -70,9 +70,9 @@ A API é organizada em camadas. Uma requisição entra pelo *Controller*, passa 
 
 | Entidade | Migration                         | Model              | Repository                   | DTOs                                                     | Mapper              | Service                                       | Controller                                 |
 | -------- | --------------------------------- | ------------------ | ---------------------------- | -------------------------------------------------------- | ------------------- | --------------------------------------------- | ------------------------------------------ |
-| Cliente  | `V1__criar_clientes.sql`, pronta  | `Cliente`, pronta  | `ClienteRepository`, pronto  | `ClienteDTO`, `LivroResponseDTO`, prontos                | `???`, implementado | `ClienteService`, implementado                | `ClienteController`, implementado          |
-| Produto  | `V2__criar_produtos.sql`, pronta  | `Produto`, pronta  | `ProdutoRepository`, pronto  | `ProdutoDTO`, `LeitorResponseDTO`, prontos               | `???`, implementado | `ProdutoService`, em parte: só o cadastro     | `ProdutoController`, em parte: só o `POST` |
-| Carrinho | `V3__criar_carrinhos.sql`, pronta | `Carrinho`, pronta | `CarrinhoRepository`, pronto | `CarrinhoTransacaoDTO`, `EmprestimoResponseDTO`, prontos | `???`, implementado | `CarrinhoService`, implementado (R1, R2 e R3) | `CarrinhoController`, implementado         |
+| Cliente  | `V1__criar_clientes.sql`, pronta  | `Cliente`, pronta  | `ClienteRepository`, pronto  | `ClienteDTO`, `ComprasResponseDTO`, prontos                | `???`, implementado | `ClienteService`, implementado                | `ClienteController`, implementado          |
+| Produto  | `V2__criar_produtos.sql`, pronta  | `Produto`, pronta  | `ProdutoRepository`, pronto  | `ProdutoDTO`, `ClienteResponseDTO`, prontos               | `???`, implementado | `ProdutoService`, em parte: só o cadastro     | `ProdutoController`, em parte: só o `POST` |
+| Carrinho | `V3__criar_carrinhos.sql`, pronta | `Carrinho`, pronta | `CarrinhoRepository`, pronto | `CarrinhoTransacaoDTO`, `CarrinhoResponseDTO`, prontos | `???`, implementado | `CarrinhoService`, implementado (R1, R2 e R3) | `CarrinhoController`, implementado         |
 
 elaborar etc..
 

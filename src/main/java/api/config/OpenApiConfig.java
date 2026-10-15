@@ -21,18 +21,18 @@ public class OpenApiConfig {
 
     // O objeto devolvido aqui vira a raiz do JSON em /v3/api-docs.
     @Bean
-    public OpenAPI apiDaBiblioteca() {
+    public OpenAPI apiDaGameStore() {
         // Monta o documento com o bloco "info" preenchido.
         return new OpenAPI()
                 .info(new Info()
                         // Nome da API, em destaque no Swagger UI.
-                        .title("Biblioteca")
+                        .title("GameStore")
                         // Versão do contrato -- aqui, a etapa em que ele foi publicado.
                         .version("Etapa 1")
                         // O que a API faz e em que pé ela está (aceita Markdown).
-                        .description("API para a biblioteca controlar os empréstimos de livros. "
-                                + "Nesta etapa respondem o cadastro de livros, o cadastro de leitores e o "
-                                + "empréstimo e a devolução, com as regras R1, R2 e R3. Todo corpo de requisição "
-                                + "e de resposta é um **DTO** e todo erro 400/404 sai no formato `ErroDTO`."));
+                        .description("API da loja de revenda de mídias físicas de jogos. "
+                                + "Nesta etapa respondem o cadastro de produtos e clientes, a recarga de saldo, "
+                                + "o carrinho e a finalização da compra, com as regras R1, R2 e R3. Todo corpo de "
+                                + "requisição e de resposta é um **DTO** e todo erro 400/404 sai no formato `ErroDTO`."));
     }
 }
