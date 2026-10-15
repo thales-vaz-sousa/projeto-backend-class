@@ -43,12 +43,11 @@ Projeto Final da disciplina de Backend (Engenharia de Software, SATC).
 
 **Regras de negócio.** O grupo criou estas regras olhando para o problema citado.
 
-| #    | Regra                                                          | Onde está no código           | Rota que usa    |
-| ---- | -------------------------------------------------------------- | ----------------------------- | --------------- |
-| `R1` | O cliente pode comprar somente produtos que tenham estoque > 0 | `CompraService`               | `POST /pagar`   |
-| `R2` | O dono não pode criar cadastro de midias com campos em branco  | `ProdutoDto e ProdutoService` | `POST /produto` |
-| `R3` | O cliente compra somente com saldo >= preço total              | `CompraService`               | `POST /compra`  |
-
+| #   | Regra                                                                                      | Onde está no código                   | Rota que usa                                  |
+| --- | ------------------------------------------------------------------------------------------ | ------------------------------------- | --------------------------------------------- |
+| R1  | Só se compra produto com estoque maior que zero e suficiente para a quantidade pedida      | `CarrinhoService`                     | `POST` /carrinho/{id}/itens` e `POST` /compra |
+| R2  | O cadastro de uma mídia não pode ter campos em branco ou inválidos (nome, preço e estoque) | `ProdutoRequestDTO`, `ProdutoService` | `POST /produto`                               |
+| R3  | O cliente só compra se o saldo for maior ou igual ao valor total do carrinho               | `CarrinhoService`                     | `POST /compra`                                |
 
 
 **Elaborar integrações:** blablabla 
@@ -66,25 +65,27 @@ Projeto Final da disciplina de Backend (Engenharia de Software, SATC).
 ## Arquitetura
 A API é organizada em camadas. Uma requisição entra pelo *Controller*, passa pelo *Service*, que aplica as regras de negócio, e chega ao banco pelo *Repository*; a resposta faz o caminho de volta entregando o status ou a informação de retorno estruturada. O Mapper converte DTO em entidade e entidade em DTO.
 
+
 **Mapa da estrutura:**
 
-| Entidade | Migration                         | Model              | Repository                   | DTOs                                                     | Mapper              | Service                                       | Controller                                 |
-| -------- | --------------------------------- | ------------------ | ---------------------------- | -------------------------------------------------------- | ------------------- | --------------------------------------------- | ------------------------------------------ |
-| Cliente  | `V1__criar_clientes.sql`, pronta  | `Cliente`, pronta  | `ClienteRepository`, pronto  | `ClienteDTO`, `ComprasResponseDTO`, prontos                | `???`, implementado | `ClienteService`, implementado                | `ClienteController`, implementado          |
-| Produto  | `V2__criar_produtos.sql`, pronta  | `Produto`, pronta  | `ProdutoRepository`, pronto  | `ProdutoDTO`, `ClienteResponseDTO`, prontos               | `???`, implementado | `ProdutoService`, em parte: só o cadastro     | `ProdutoController`, em parte: só o `POST` |
-| Carrinho | `V3__criar_carrinhos.sql`, pronta | `Carrinho`, pronta | `CarrinhoRepository`, pronto | `CarrinhoTransacaoDTO`, `CarrinhoResponseDTO`, prontos | `???`, implementado | `CarrinhoService`, implementado (R1, R2 e R3) | `CarrinhoController`, implementado         |
+|Entidade|Migration|Model|Repository|DTOs|Mapper|Service|Controller|
+|---|---|---|---|---|---|---|---|
+|Cliente|`V1__criar_clientes.sql`, pronta|`Cliente`, pronta|`ClienteRepository`, pronto|`ClienteRequestDTO`, `ClienteResponseDTO`, `SaldoClienteRequestDTO`, prontos|`ClienteMapper`, implementado|`ClienteService`, implementado|`ClienteController`, implementado|
+|Produto|`V2__criar_produtos.sql`, pronta|`Produto`, pronta|`ProdutoRepository`, pronto|`ProdutoRequestDTO`, `ProdutoResponseDTO`, prontos|`ProdutoMapper`, implementado|`ProdutoService`, implementado (R2)|`ProdutoController`, implementado|
+|Carrinho|`V3__criar_carrinhos.sql`, pronta|`Carrinho`, pronta|`CarrinhoRepository`, pronto|`CarrinhoRequestDTO`, `CarrinhoResponseDTO`, `CompraRequestDTO`, `CompraResponseDTO`, prontos|`CarrinhoMapper`, implementado|`CarrinhoService`, implementado (R1 e R3)|`CarrinhoController`, implementado|
+|ItemCarrinho|`V3__criar_carrinhos.sql`, pronta|`ItemCarrinho`, pronta|`ItemCarrinhoRepository`, pronto|`ItemCarrinhoRequestDTO`, `ItemCarrinhoResponseDTO`, prontos|`ItemCarrinhoMapper`, implementado|`ItemCarrinhoService`, montada, sem lógica|`ItemCarrinhoController`, montado, sem rotas|
 
-elaborar etc..
-
+Os erros usam `ErroDTO` e `CampoErroDTO`, também em `dto/`.
 ## Entidades
 
-| Entidade | O que representa                                    | Como se relaciona                           |
-| -------- | --------------------------------------------------- | ------------------------------------------- |
-| Cliente  | Pessoa cadastrada na loja, com saldo                | Tem um carrinho e faz várias compras        |
-| Produto  | Mídia física de jogo, com preço e estoque           | Aparece em vários itens de carrinho         |
-| Carrinho | Conjunto de produtos que o cliente pretende comprar | Pertence a um cliente e tem vários produtos |
+|Entidade|O que representa|Como se relaciona|
+|---|---|---|
+|Cliente|Pessoa cadastrada na loja, com saldo|Tem vários carrinhos (os finalizados são suas compras)|
+|Produto|Mídia física de jogo, com preço e estoque|Aparece em vários itens de carrinho|
+|Carrinho|Conjunto de produtos que o cliente pretende comprar|Pertence a um cliente e tem vários itens|
+|ItemCarrinho|Um produto dentro de um carrinho, com a quantidade|Liga um carrinho a um produto (relação N:N)|
 
-Atributos, tipos e o diagrama das tabelas estão específicados em: [docs/modelo-de-dominio.md](docs/modelo-de-dominio.md).
+Atributos, tipos e o diagrama das tabelas estão em docs/modelo-de-dominio.md.
 
 ## Rotas
 
@@ -118,22 +119,30 @@ Resposta, `200 Sucessfull`:
 {
   "id": 1,
   "clienteNome": "João",
-  "produtoNome": "Fita Super Nintendo - Donkey Kong",
+  "itens": [
+    {
+      "produtoId": 1,
+      "produtoNome": "Fita Super Nintendo - Donkey Kong",
+      "precoUnitario": 89.90,
+      "quantidade": 2,
+      "subtotal": 179.80
+    }
+  ],
+  "valorTotal": 179.80,
   "dataCompra": "2026-10-06"
 }
 ```
 
 ### Erros
 
-Todo erro sai no mesmo formato. Este é o `400` da regra R1 ou R3, quando alguém tenta comprar  um livro que não tem estoque ou não tem saldo suficiente para a transação:
+Todo erro sai no mesmo formato. Este é o `400` da regra R3, quando o cliente não tem saldo suficiente (a R1 sai igual, com a mensagem começando em `R1:`):
 
 ```json
-{
-  "status": 400,
-  "erro": "Bad Request",
-  "mensagem": "R3: o Cliente {NomeCliente} não possui saldo suficiente para efetuar a compra",
-  "caminho": "/compra",
-  "timestamp": "2026-10-06T19:30:00",
+{ "status": 400, "erro": "Bad Request", 
+"mensagem": "R3: o cliente João não possui saldo suficiente para efetuar a compra (saldo: 0.00, total: 179.80)", 
+"caminho": "/compra", 
+"timestamp": "2026-10-06T19:30:00", 
+"campos": [] 
 }
 ```
 
@@ -145,18 +154,22 @@ Estão no contrato, mas ainda não respondem.
 | ------------------------------------- | ------------------------ |
 | `GET /clientes` e `GET /cliente/{id}` | Listar e buscar clientes |
 
-O contrato completo, com todas as rotas e os DTOs, está em [docs/contrato-da-api.md](docs/contrato-da-api.md).
+O contrato completo, com todas as rotas, DTOs e JSON, está em [docs/contrato-da-api.md](docs/contrato-da-api.md).
 
 ## Como executar
 
 Pré-requisitos: JDK 25, Docker Desktop aberto e Git.
 
 ```bash
-cd "Aula 10-11/exemplo-biblioteca"
+cd gamestore
 
 docker compose up -d          # sobe o PostgreSQL na porta 5438
 ./mvnw spring-boot:run        # Windows: .\mvnw.cmd spring-boot:run
 ```
+
+Para ver as regras funcionando: cadastre um produto com estoque 1 e um cliente com saldo baixo,
+monte um carrinho e chame `POST /compra` para ver a R3 barrar. Depois dê saldo
+com `PUT /saldo-cliente`, compre (estoque vai a 0) e tente comprar de novo para ver a R1 barrar.
 
 Com a API no ar:
 
@@ -167,21 +180,26 @@ Com a API no ar:
 
 Para testar as rotas, use o Swagger UI ou o **Postman**. No Postman, importe todas as rotas de uma vez: **Import** → **Link** → `http://localhost:8080/v3/api-docs`.
 
-Para ver as regras funcionando: cadastre um livro e um leitor, faça um empréstimo e tente emprestar o mesmo livro de novo (R2). Depois cadastre mais livros e faça empréstimos para o mesmo leitor até o quarto ser barrado (R1).
+Para ver as regras funcionando ao rodar:
+
+1. Cadastre um produto com `estoque` 1 (`POST /produto`) e um cliente (`POST /cliente`, saldo 0).
+2. Abra um carrinho (`POST /carrinho`) e coloque o produto nele (`POST /carrinho/1/itens`). Com `quantidade` 2, a **R1** barra.
+3. Com `quantidade` 1, chame `POST /compra`: a **R3** barra, porque o saldo é zero.
+4. Dê saldo com `PUT /saldo-cliente` e compre de novo. O estoque vai a 0.
+5. Abra outro carrinho e tente pôr o mesmo produto: a **R1** barra de novo.
+6. Para a **R2**, envie `POST /produto` com o `nome` em branco.
 
 Para parar: `Ctrl+C` na API e `docker compose stop` no banco. Para apagar o banco e rodar as migrations do zero: `docker compose down -v` e suba de novo.
 
 ## Situação do projeto
 
-ReadME em andamento
+| Parte        | Situação                                                                                                           |
+| ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Desenho      | Problema e regras neste README; modelo e contrato em `docs/`                                                       |
+| Estrutura    | As 4 entidades têm migration, entidade, Repository, DTOs, Mapper, Service e Controller (`ItemCarrinho` só montada) |
+| API e regras | Todas as rotas do contrato funcionam; R1, R2 e R3 implementadas                                                    |
 
-| Parte | Situação |
-|---|---|
-| Desenho | Completo: problema e regras neste README, modelo e contrato em `docs/` |
-| Estrutura | As 3 entidades têm migration, entidade, Repository, DTOs, Mapper, Service e Controller |
-| API e regras | Livros com as 3 rotas da API simples; cadastro de leitores; empréstimo e devolução com R1, R2 e R3 implementadas |
-
-**Ainda não funciona:** `GET /leitores` e `GET /leitores/{id}`.
+**Ainda não funciona:** nada do que está no contrato. Ficam para as próximas etapas as rotas que nenhuma regra usa (como `PUT` de produto) e a autenticação.
 
 ## Documentação
 
