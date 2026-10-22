@@ -84,7 +84,7 @@
         </dependency>
 
         <!-- Aula 09, Swagger: o springdoc lê os Controllers e os DTOs na subida da
-             aplicação e gera o contrato OpenAPI (/v3/api-docs) e a página interativa
+             aplicação e gera o contrato OpenAPI (/v3/GameStoreApi-docs) e a página interativa
              do Swagger UI (/swagger-ui.html). Não faz parte do ecossistema gerenciado
              pelo starter-parent, por isso aqui a <version> é obrigatória: a linha 2.x
              é a do Spring Boot 3 (a 3.x já é para o Spring Boot 4). -->

@@ -5,7 +5,7 @@ Os 10 critérios que serão avaliados na revisão do código, descritos em `Aula
 | Critério | Marca | Evidência                                                                                                                                  |
 |---|---|--------------------------------------------------------------------------------------------------------------------------------------------|
 | P1 A API sobe seguindo o README | ✅ | `README.md`, seção "Como executar"                                                                                                         |
-| P2 Cada classe no pacote da sua camada | ✅ | `src/main/java/api/`                                                                                                                       |
+| P2 Cada classe no pacote da sua camada | ✅ | `src/main/java/GameStoreApi/`                                                                                                                       |
 | P3 Migrations e `@Entity` de todas as tabelas, e a API sobe | ✅ | `V1` a `V3` em `db/migration/` (as chaves estrangeiras estão na `V3`);                                                                     |
 | P4 DTOs de entrada e de saída de todas as entidades | ✅ | Seis records em `dto/`                                                                                                                     |
 | P5 Repository, Mapper, Service e Controller de todas, com o comentário no topo, e o mapa da estrutura | ✅ | As classes das quatro pastas; mapa no `README.md`, seção "Arquitetura"                                                                     |

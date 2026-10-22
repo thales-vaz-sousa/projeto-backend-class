@@ -1,0 +1,14 @@
+// Define o pacote dos repositórios.
+package GameStoreClassLibrary.Carrinho.Repositories;
+
+// Importa o repositório do Spring Data JPA que já traz o CRUD pronto.
+import org.springframework.data.jpa.repository.JpaRepository;
+
+// Importa a entidade que este repositório acessa.
+import GameStoreClassLibrary.Carrinho.Entities.Carrinho;
+
+// CAMADA: Repository
+// RESPONSABILIDADE: ler e gravar registros de Carrinho no banco.
+// SITUAÇÃO: implementada. save, findById, findAll e delete vêm do JpaRepository.
+public interface CarrinhoRepository extends JpaRepository<Carrinho, Long> {
+}

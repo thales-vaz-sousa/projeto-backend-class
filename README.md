@@ -154,7 +154,7 @@ Estão no contrato, mas ainda não respondem.
 | ------------------------------------- | ------------------------ |
 | `GET /clientes` e `GET /cliente/{id}` | Listar e buscar clientes |
 
-O contrato completo, com todas as rotas, DTOs e JSON, está em [docs/contrato-da-api.md](docs/contrato-da-api.md).
+O contrato completo, com todas as rotas, DTOs e JSON, está em [docs/contrato-da-GameStoreApi.md](docs/contrato-da-api.md).
 
 ## Como executar
 
